@@ -8,8 +8,5 @@ void setup() {
 }
 
 void loop() {
-    // digitalWrite(LED_PIN, HIGH); // Turn the LED on
-    // delay(1000); // Wait for 1 second
-    // digitalWrite(LED_PIN, LOW); // Turn the LED off
-    // delay(1000); // Wait for 1 second
+    // TODO: Get Train Update every 10 seconds
 }
