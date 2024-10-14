@@ -123,7 +123,7 @@ JsonArray getTrainPositions() {
   WiFiClientSecure client;
   client.setInsecure(); // Use this for testing purposes only. For production, you should use proper certificate validation.
 
-  url = apiUrl + "?key=" + apiKey + "&rt=Blue&outputType=JSON";
+  url = apiUrl + "?key=" + apiKey + "&rt=Blue" + outputType;
 
   HTTPClient https;
   https.begin(client, url);
