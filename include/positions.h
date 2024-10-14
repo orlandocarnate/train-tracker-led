@@ -1,14 +1,15 @@
 #ifndef POSITIONS_H
 #define POSITIONS_H
 
-#include <Arduino.h>
-#include <ArduinoJson.h>
-#include <HTTPClient.h>
-#include <TimeLib.h>
-#include <JSONVar.h>
-#include <JSON.h>
+// #include <Arduino.h>
+// #include <ArduinoJson.h>
+// #include <HTTPClient.h>
+// #include <WiFiClientSecure.h>
+// #include <TimeLib.h>
+// #include <JSONVar.h>
+// #include <JSON.h>
 
-#include "creds.h"
+// #include "creds.h"
 
 struct TrainDirection {
     int id;
@@ -25,7 +26,7 @@ struct Stop {
     const char* name;
 };
 
-JSONVar getTrainPositions();
+// JsonArray getTrainPositions();
 
 // for mapId Parent Stop
 extern const Stop mapidList[] = {
@@ -104,6 +105,6 @@ extern const Stop stpidList[] = {
     {"40890", "O'Hare"},
 };
 
-int findIndexOfNextStaId(const char* nextStaId);
+// int findIndexOfNextStaId(const char* nextStaId);
 
 #endif

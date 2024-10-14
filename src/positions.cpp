@@ -1,106 +1,97 @@
-#include "positions.h"
+// #include "positions.h"
 
-const char* ssid = my_ssid;
-const char* password = my_password;
-String apiKey = cta_train_key;
-String apiUrl = cta_train_key;
-String outputType = output_type;
+// const char* ssid = my_ssid;
+// const char* password = my_password;
+// String apiKey = cta_train_key;
+// String apiUrl = cta_train_key;
+// String outputType = output_type;
 
-const int apiTimer = 60000;
+// const int apiTimer = 60000;
 
-String url = "";
+// String url = "";
 
-String estimatedTime(float arrT, float tmst) {
-  int result = int(((arrT - tmst) / 60) + 0.5);
-  if (result <= 1) {
-    return "Due";
-  }
-  String eta = String(result);
-  eta.concat("min");
-  return eta;
-}
+// String estimatedTime(float arrT, float tmst) {
+//   int result = int(((arrT - tmst) / 60) + 0.5);
+//   if (result <= 1) {
+//     return "Due";
+//   }
+//   String eta = String(result);
+//   eta.concat("min");
+//   return eta;
+// }
 
-String httpGETRequest(const char* serverName) {
-  WiFiClient client;
-  HTTPClient http;
-  // Your Domain name with URL path or IP address with path
-  http.begin(client, serverName);
+// JsonArray getTrainPositions() {
+//   WiFiClientSecure client;
+//   client.setInsecure(); // Use this for testing purposes only. For production, you should use proper certificate validation.
+
+//   url = apiUrl + "?key=" + apiKey + "&rt=Blue&outputType=JSON";
+
+//   HTTPClient https;
+//   https.begin(client, url);
+
+//   int httpResponseCode = https.GET();
+//   String payload = "{}";
+
+//   if (httpResponseCode > 0) {
+//     Serial.print("HTTP Response code: ");
+//     Serial.println(httpResponseCode);
+//     payload = https.getString();
+//     // // Iterate through the array
+//     // for (JsonObject obj : array) {
+//     //     const char* id = obj["id"];
+//     //     const char* value = obj["value"];
+//     //     Serial.print("ID: ");
+//     //     Serial.println(id);
+//     //     Serial.print("Value: ");
+//     //     Serial.println(value);
+//     // }
+
+//   } else {
+//     Serial.print("Error code: ");
+//     Serial.println(httpResponseCode);
+//   }
+
+//   https.end();
+
   
-  // Send HTTP POST request
-  int httpResponseCode = http.GET();
-  
-  String payload = "{}"; 
-  
-  if (httpResponseCode>0) {
-    Serial.print("HTTP Response code: ");
-    Serial.println(httpResponseCode);
-    payload = http.getString();
-  }
-  else {
-    Serial.print("Error code: ");
-    Serial.println(httpResponseCode);
-  }
-  // Free resources
-  http.end();
+//   // Create JSON document to hold the parsed data
+//   DynamicJsonDocument doc(4096);
 
-  return payload;
-}
+//   // Deserialize the JSON document
+//   DeserializationError error = deserializeJson(doc, payload);
 
-String readResponse(WiFiClientSecure& client) {
-  String response = "";
-  while (client.connected() || client.available()) {
-    if (client.available()) {
-      response += client.readString();
-    }
-  }
-  return response;
-}
+//   if (error) {
+//       Serial.print("Deserialization failed: ");
+//       Serial.println(error.c_str());
+//       DynamicJsonDocument emptyDoc(4096); // gnerate an emptyDoc variable
+//       return emptyDoc.to<JsonArray>(); // return empty array
+//   }
 
+//   // Extract the array
+//   JsonArray trainList = doc["ctatt"]["route"][0]["train"].as<JsonArray>();
 
-JSONVar jsonParser(String apiPath) {
-  // Serial.println(apiPath);
-  Serial.println("Initiated API Call to " + apiPath);
-  String jsonBuffer = httpGETRequest(apiPath.c_str());
-  // Serial.println(jsonBuffer);
+//   const char* timestamp = doc["ctatt"]["timestamp"];
+//   Serial.println("API Call at " + timestamp);
 
-  return JSON.parse(jsonBuffer);
-}
+//   // const char* timestamp = doc["ctatt"]["tmst"];
+//   // int errorCode = doc["ctatt"]["errCd"];
+//   // const char* routeName = doc["ctatt"]["route"][0]["@name"];
+//   // const char* trainNumber = doc["ctatt"]["route"][0]["train"][0]["rn"];
+//   // const char* nextStationName = doc["ctatt"]["route"][0]["train"][0]["nextStaNm"];
 
-JSONVar getTrainPositions() {
-  WiFiClientSecure client;
-  client.setInsecure(); // Use this for testing purposes only. For production, you should use proper certificate validation.
+//   // Serial.println(timestamp);
+//   // Serial.println(errorCode);
+//   // Serial.println(routeName);
+//   // Serial.println(trainNumber);
 
-  url = apiUrl + "?key=" + apiKey + "&rt=Blue&outputType=JSON";
+//     return trainList;
+// }
 
-  JSONVar dataObject = jsonParser(url);
-
-  if (JSON.typeof(url) == "undefined") {
-    Serial.println("Parsing Input " + url + " failed!");
-    return JSONVar(); // return empty object
-  }
-
-  const char* timestamp = dataObject["ctatt"]["timestamp"];
-  JSONVar trainList = dataObject["ctatt"]["route"][0]["train"];
-
-  // const char* timestamp = doc["ctatt"]["tmst"];
-  // int errorCode = doc["ctatt"]["errCd"];
-  // const char* routeName = doc["ctatt"]["route"][0]["@name"];
-  // const char* trainNumber = doc["ctatt"]["route"][0]["train"][0]["rn"];
-  // const char* nextStationName = doc["ctatt"]["route"][0]["train"][0]["nextStaNm"];
-
-  // Serial.println(timestamp);
-  // Serial.println(errorCode);
-  // Serial.println(routeName);
-  // Serial.println(trainNumber);
-
-    return trainList;
-}
-
-int findIndexOfNextStaId(const char* nextStaId) {
-    for (int i = 0; i < sizeof(mapidList) / sizeof(mapidList[0]); i++) {
-        if (strcmp(mapidList[i].id, nextStaId) == 0) {
-            return i;
-        }
-    }
-    return -1; // Return -1 if not found
-}
+// int findIndexOfNextStaId(const char* nextStaId) {
+//     for (int i = 0; i < sizeof(mapidList) / sizeof(mapidList[0]); i++) {
+//         if (strcmp(mapidList[i].id, nextStaId) == 0) {
+//             return i;
+//         }
+//     }
+//     return -1; // Return -1 if not found
+// }
