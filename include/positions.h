@@ -10,6 +10,16 @@
 
 #include "creds.h"
 
+struct TrainDirection {
+    int id;
+    const char* name;
+};
+
+extern const TrainDirection directions[] = {
+    {1, "O'Hare-bound"},
+    {5, "Forest Park-bound"}
+};
+
 struct Stop {
     const char* id;
     const char* name;

@@ -12,14 +12,14 @@ enum LedMode { OFF, ON, SOLID, BLINK };
 
 struct LedConfig {
     int position;
-    CRGB color;
+    // CRGB color;
     LedMode mode;
     int delayTime;
     unsigned long lastUpdate;
     bool state;
 };
 
-void controlLed(int position, CRGB color, LedMode mode, int delayTime);
+void controlLed(int position, LedMode mode, int delayTime);
 void setupLeds();
 void animateLeds();
 

@@ -1,10 +1,9 @@
 #include "leds.h"
 
-CRGB* leds;
+CRGB leds[NUM_LEDS];
 
-void setupLeds(int numLeds) {
-    leds = new CRGB[numLeds];
-    FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, numLeds);
+void setupLeds() {
+    FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
     FastLED.clear();
     FastLED.show();
 }

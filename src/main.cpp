@@ -38,9 +38,14 @@ void setup() {
 void loop() {
     // TODO: Get Train Update every 10 seconds
     trainList = getTrainPositions();
-    int numLeds = getStopLength(mapidList);
+    // int numLeds = getStopLength(mapidList);
 
-    for (int i = 0; i < numLeds; i++) {
-        
+    for (int i = 0; i < trainList.length(); i++) {
+        String nextStaId = trainList[i]["nextStaId"]; // next parent station
+        String trDr = trainList[i]["trDr"]; // direction
+        String prdt = trainList[i]["prdt"]; // time of prediction made
+        String arrT = trainList[i]["arrT"]; // predicted arrival time
+        String isApp = trainList[i]["isApp"]; // is approaching 1=true, 0=false
+        String isDly = trainList[i]["isDly"]; // is delayed 1=true, 0=false
     }
 }
