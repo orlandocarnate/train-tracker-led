@@ -2,6 +2,7 @@
 #define LEDS_H
 
 #include <FastLED.h>
+#include <JSONVar.h>
 
 #define NUM_LEDS 33
 #define DATA_PIN 5
@@ -19,8 +20,10 @@ struct LedConfig {
     bool state;
 };
 
-void controlLed(int position, LedMode mode, int delayTime);
+// void controlLed(int position, LedMode mode, int delayTime);
 void setupLeds();
-void animateLeds();
+// void animateLeds();
+
+void updateLEDs(JSONVar trainList);
 
 #endif // LEDS_H

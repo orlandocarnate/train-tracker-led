@@ -10,10 +10,6 @@ const char* password = my_password;
 
 JSONVar trainList;
 
-size_t getStopLength(const Stop* list) {
-    return sizeof(mapidList) / sizeof(mapidList[0])
-}
-
 void setup() {
     Serial.begin(115200);
 
@@ -40,12 +36,7 @@ void loop() {
     trainList = getTrainPositions();
     // int numLeds = getStopLength(mapidList);
 
-    for (int i = 0; i < trainList.length(); i++) {
-        String nextStaId = trainList[i]["nextStaId"]; // next parent station
-        String trDr = trainList[i]["trDr"]; // direction
-        String prdt = trainList[i]["prdt"]; // time of prediction made
-        String arrT = trainList[i]["arrT"]; // predicted arrival time
-        String isApp = trainList[i]["isApp"]; // is approaching 1=true, 0=false
-        String isDly = trainList[i]["isDly"]; // is delayed 1=true, 0=false
-    }
+    updateLEDs(trainList);
+
+    delay(30000);
 }

@@ -96,4 +96,11 @@ JSONVar getTrainPositions() {
     return trainList;
 }
 
-
+int findIndexOfNextStaId(const char* nextStaId) {
+    for (int i = 0; i < sizeof(mapidList) / sizeof(mapidList[0]); i++) {
+        if (strcmp(mapidList[i].id, nextStaId) == 0) {
+            return i;
+        }
+    }
+    return -1; // Return -1 if not found
+}

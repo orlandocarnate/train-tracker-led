@@ -104,5 +104,6 @@ extern const Stop stpidList[] = {
     {"40890", "O'Hare"},
 };
 
+int findIndexOfNextStaId(const char* nextStaId);
 
 #endif
