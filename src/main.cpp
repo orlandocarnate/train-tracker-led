@@ -9,7 +9,7 @@
 #include "positions.h"
 
 
-#define NUM_LEDS 33
+#define NUM_LEDS 66
 #define DATA_PIN 5
 static const char* train_arrival_url= "https://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?";
 static const char* follow_train_url= "https://lapi.transitchicago.com/api/1.0/ttfollow.aspx";
@@ -78,8 +78,8 @@ void setup() {
 }
 
 int findIndexOfNextStaId(const char* nextStaId) {
-    for (int i = 0; i < sizeof(mapidList) / sizeof(mapidList[0]); i++) {
-        if (strcmp(mapidList[i].id, nextStaId) == 0) {
+    for (int i = 0; i < sizeof(stpidList) / sizeof(stpidList[0]); i++) {
+        if (strcmp(stpidList[i].id, nextStaId) == 0) {
             return i;
         }
     }
@@ -196,6 +196,8 @@ JsonArray getTrainPositions() {
 
         Serial.print("Next Station: ");
         Serial.println(ctatt_route_0_train_item_nextStaId);
+        Serial.print("Next Stop: ");
+        Serial.println(ctatt_route_0_train_item_nextStpId);
         Serial.print("Arrival Time: ");
         Serial.println(ctatt_route_0_train_item_arrT);
         Serial.print("Is Approaching: ");
@@ -203,7 +205,7 @@ JsonArray getTrainPositions() {
         Serial.print("Is Delayed: ");
         Serial.println(ctatt_route_0_train_item_isDly);
 
-        updateLEDs(ctatt_route_0_train_item_nextStaId, ctatt_route_0_train_item_isApp, ctatt_route_0_train_item_isDly);
+        updateLEDs(ctatt_route_0_train_item_nextStpId, ctatt_route_0_train_item_isApp, ctatt_route_0_train_item_isDly);
 
     }
 
