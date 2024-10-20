@@ -1,17 +1,41 @@
 #include "rss.h"
 
-// Set the LCD address to 0x27 for a 16x2 display
-LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-void lcdSetup() {
-    // Initialize LCD
-    lcd.begin();
-    lcd.backlight();
-    lcd.setCursor(0, 0);
-    lcd.print("Hello, World!");
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET -1
+#define SSD1306_I2C_ADDRESS 0x3C
+// #define SDA_PIN 21
+// #define SCL_PIN 22
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
+size_t arrayLength = 0;
+size_t currentIndex = 0;
+bool isDataNew = false;
+
+JsonArray CTAAlerts_Alert;
+JsonObject CTAAlerts;
+
+String sanitizeString(String input) {
+    input.replace("’", "'"); // Replace curly apostrophe with standard one
+    return input;
+}
+
+void rssSetup() {
+    Serial.begin(115200);
+    Serial.println(F("OLED Setup Init"));
+    display.begin(SSD1306_SWITCHCAPVCC, SSD1306_I2C_ADDRESS);
+    display.clearDisplay();
+    display.setTextColor(WHITE);
+    display.setTextSize(1);
+    display.setCursor(0, 0);
+    display.print("Hello, World!");
+    display.display();
 }
 
 String getPayload() {
+    Serial.println("Get Payload");
     WiFiClientSecure client;
 
     client.setInsecure(); // Use this for testing purposes only. For production, you should use proper certificate validation.
@@ -26,8 +50,8 @@ String getPayload() {
 
     if (httpResponseCode > 0) {
         Serial.print("HTTP Response code: ");
-        Serial.println(httpResponseCode);
         payload = https.getString();
+        // Serial.println(payload);
     } else {
         Serial.print("Error code: ");
         Serial.println(httpResponseCode);
@@ -39,7 +63,7 @@ String getPayload() {
 }
 
 
-void parseRss() {
+void updateRssArray() {
     String payload = getPayload();
 
     // Create JSON document to hold the parsed data
@@ -49,26 +73,57 @@ void parseRss() {
     DeserializationError error = deserializeJson(doc, payload);
 
     if (error) {
-        Serial.print("Deserialization failed: ");
-        Serial.println(error.c_str());
-        JsonDocument emptyDoc; // gnerate an emptyDoc variable
-        // return emptyDoc.to<JsonArray>(); // return empty array
-        return;
+    Serial.print("deserializeJson() failed: ");
+    Serial.println(error.c_str());
+    return;
     }
 
     // process data
-    JsonObject CTAAlerts = doc["CTAAlerts"].to<JsonObject>();
-    String timeStamp = CTAAlerts["TimeStamp"];
-        // CTAAlerts["ErrorCode"] = "0";
-        // CTAAlerts["ErrorMessage"] = nullptr;
+    CTAAlerts = doc["CTAAlerts"];
+    const char* CTAAlerts_TimeStamp = CTAAlerts["TimeStamp"]; // "2024-10-20T12:13:49"
+    Serial.println("Timestamp: " + String(CTAAlerts_TimeStamp));
+
+    for (JsonPair kv : doc.as<JsonObject>()) {
+        Serial.println(kv.key().c_str());  
+    }
 
     // Array
-    JsonArray CTAAlerts_Alert = CTAAlerts["Alert"].to<JsonArray>();
+    CTAAlerts_Alert = doc["CTAAlerts"]["Alert"].as<JsonArray>();
 
-    // iterate through JsonArray
-    for (JsonObject alertItem : CTAAlerts_Alert) {
-        // assign variables
-        String headline = alertItem["Headline"];
-        String shortDescription = alertItem["ShortDescription"];
+    Serial.println("CTAAlerts_Alert[0] Keys: ");
+    for (JsonPair kv : CTAAlerts_Alert[0].as<JsonObject>()) {
+        Serial.println(kv.key().c_str());  
     }
+    
+    JsonObject obj = CTAAlerts_Alert[0].as<JsonObject>();
+    
+    String headline = sanitizeString(obj["Headline"].as<String>());
+
+    Serial.println(headline);
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.print(headline);
+    display.display();
+
+
+
+    arrayLength = CTAAlerts_Alert.size();
+    Serial.print("Array Length: ");
+    Serial.println(CTAAlerts_Alert.size());
+    isDataNew = true;
+    Serial.println("Rss Updated");
+    Serial.println("isDataNew TRUE");
+    // loopRssFeed(CTAAlerts_Alert);
+}
+
+void displayNextRssFeed() {
+
+    for (JsonObject cta_alert : CTAAlerts_Alert) {
+        const char* alertId = cta_alert["AlertId"];
+        Serial.println("alertId:");
+        Serial.println(alertId);
+
+    }
+
+
 }

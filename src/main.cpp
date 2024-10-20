@@ -7,6 +7,7 @@
 #include "WiFi.h"
 #include "creds.h"
 #include "positions.h"
+#include "rss.h"
 
 
 #define NUM_LEDS 66
@@ -15,6 +16,15 @@ static const char* train_arrival_url= "https://lapi.transitchicago.com/api/1.0/t
 static const char* follow_train_url= "https://lapi.transitchicago.com/api/1.0/ttfollow.aspx";
 static const char* train_positions_url= "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx";
 static const char* output_type= "&outputType=JSON";
+
+const long trainInterval = 10000; // 10 seconds
+unsigned long previousTrainMillis = 0;
+
+const long rssInterval = 5000;  // 5 seconds
+unsigned long previousRssMillis = 0;
+
+const long rssArrayUpdateInterval = 60000; 
+unsigned long previousRssArrayUpdateMillis = 0;
 
 const char* ssid = my_ssid;
 const char* password = my_password;
@@ -74,7 +84,9 @@ void setup() {
     Serial.println(WiFi.localIP().toString());
 
     // pinMode(LED_PIN, OUTPUT); // Set the LED pin as an output
-    setupLeds();
+    rssSetup();
+    updateRssArray();
+    // setupLeds();
 }
 
 int findIndexOfNextStaId(const char* nextStaId) {
@@ -215,11 +227,28 @@ JsonArray getTrainPositions() {
 }
 
 void loop() {
-    // TODO: Get Train Update every 10 seconds
     if (WiFi.status() == WL_CONNECTED) {
-        JsonArray trainList = getTrainPositions();
+        unsigned long currentMillis = millis();
 
+        // Update Train Positions every 
+        if (currentMillis - previousTrainMillis >= trainInterval) {
+            previousTrainMillis = currentMillis;
+            Serial.println("Train Positions Updated");
+            // JsonArray trainList = getTrainPositions();
+        }
+
+        // Update RSS OLED display every 5 seconds and display next item of array
+        // if (currentMillis - previousRssMillis >= rssInterval) {
+        //     previousRssMillis = currentMillis;
+        //     Serial.println("Display Next RSS Feed");
+        //     displayNextRssFeed();
+        // }
+
+        // Update RSS OLED display every 5 seconds and display next item of array
+        if (currentMillis - previousRssArrayUpdateMillis >= rssArrayUpdateInterval) {
+            previousRssArrayUpdateMillis = currentMillis;
+            Serial.println("Update RSS Feed Array");
+            updateRssArray();
+        }
     };
-
-    delay(10000);
 }

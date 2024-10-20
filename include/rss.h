@@ -1,11 +1,13 @@
-#ifndef POSITIONS_H
-#define POSITIONS_H
+#ifndef RSS_H
+#define RSS_H
 
 #include <ArduinoJson.h>
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <Wire.h>
-#include <LiquidCrystal_I2C.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#include "TomThumb.h"
 
 // #include <Arduino.h>
 // #include <TimeLib.h>
@@ -17,5 +19,9 @@
 #define LCD1602_SCL 22
 
 static const char* rss_blue_line = "https://www.transitchicago.com/api/1.0/alerts.aspx?routeid=blue&outputType=JSON";
+
+void rssSetup();
+void updateRssArray();
+void displayNextRssFeed();
 
 #endif
