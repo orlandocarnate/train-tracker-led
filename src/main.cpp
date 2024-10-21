@@ -11,15 +11,6 @@
 #include "positions.h"
 #include "rss.h"
 
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-#define OLED_RESET -1
-#define SSD1306_I2C_ADDRESS 0x3C
-// #define SDA_PIN 21
-// #define SCL_PIN 22
-
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
-
 #define NUM_LEDS 66
 #define DATA_PIN 5
 static const char* train_arrival_url= "https://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?";
@@ -42,9 +33,9 @@ String apiKey = cta_train_key;
 String apiUrl = train_positions_url;
 String outputType = output_type;
 
-JsonArray CTAAlerts_Alert;
-JsonObject CTAAlerts;
-JsonDocument rssDoc;
+// JsonArray CTAAlerts_Alert;
+// JsonObject CTAAlerts;
+// JsonDocument rssDoc;
 
 String url = "";
 
@@ -80,85 +71,85 @@ void clearLEDs() {
     }
 }
 
-String sanitizeString(String input) {
-    input.replace("’", "'"); // Replace curly apostrophe with standard one
-    return input;
-}
+// String sanitizeString(String input) {
+//     input.replace("’", "'"); // Replace curly apostrophe with standard one
+//     return input;
+// }
 
-void oledSetup() {
-    Serial.begin(115200);
-    Serial.println(F("OLED Setup Init"));
-    display.begin(SSD1306_SWITCHCAPVCC, SSD1306_I2C_ADDRESS);
-    display.clearDisplay();
-    display.setTextColor(WHITE);
-    display.setTextSize(1);
-    display.setCursor(0, 0);
-    display.print("Hello, World!");
-    display.display();
-}
+// void oledSetup() {
+//     Serial.begin(115200);
+//     Serial.println(F("OLED Setup Init"));
+//     display.begin(SSD1306_SWITCHCAPVCC, SSD1306_I2C_ADDRESS);
+//     display.clearDisplay();
+//     display.setTextColor(WHITE);
+//     display.setTextSize(1);
+//     display.setCursor(0, 0);
+//     display.print("Hello, World!");
+//     display.display();
+// }
 
-void displayRssData(String data) {
-    Serial.println(data);
+// void displayRssData(String data) {
+//     Serial.println(data);
 
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.print(data);
-    display.display();
-}
+//     display.clearDisplay();
+//     display.setCursor(0, 0);
+//     display.print(data);
+//     display.display();
+// }
 
-String getPayload() {
-    Serial.println("Get Payload");
-    WiFiClientSecure client;
+// String getPayload() {
+//     Serial.println("Get Payload");
+//     WiFiClientSecure client;
 
-    client.setInsecure(); // Use this for testing purposes only. For production, you should use proper certificate validation.
+//     client.setInsecure(); // Use this for testing purposes only. For production, you should use proper certificate validation.
 
-    String url = rss_blue_line;
+//     String url = rss_blue_line;
 
-    HTTPClient https;
-    https.begin(client, url);
+//     HTTPClient https;
+//     https.begin(client, url);
 
-    int httpResponseCode = https.GET();
-    String payload = "{}";
+//     int httpResponseCode = https.GET();
+//     String payload = "{}";
 
-    if (httpResponseCode > 0) {
-        Serial.print("HTTP Response code: ");
-        Serial.println(httpResponseCode);
-        payload = https.getString();
-        // Serial.println(payload);
-    } else {
-        Serial.print("Error code: ");
-        Serial.println(httpResponseCode);
-    }
+//     if (httpResponseCode > 0) {
+//         Serial.print("HTTP Response code: ");
+//         Serial.println(httpResponseCode);
+//         payload = https.getString();
+//         // Serial.println(payload);
+//     } else {
+//         Serial.print("Error code: ");
+//         Serial.println(httpResponseCode);
+//     }
 
-    https.end();
+//     https.end();
     
-    return payload;
-}
+//     return payload;
+// }
 
 
-void getRssObject() {
-    String payload = getPayload();
+// void getRssObject() {
+//     String payload = getPayload();
 
-    // Create JSON document to hold the parsed data
+//     // Create JSON document to hold the parsed data
     
 
-    // Deserialize the JSON document
-    DeserializationError error = deserializeJson(rssDoc, payload);
+//     // Deserialize the JSON document
+//     DeserializationError error = deserializeJson(rssDoc, payload);
 
-    if (error) {
-        Serial.print("deserializeJson() failed: ");
-        Serial.println(error.c_str());
-        // JsonDocument emptyDoc; // gnerate an emptyDoc variable
-        // return emptyDoc.to<JsonObject>();
-        return;
-    }
+//     if (error) {
+//         Serial.print("deserializeJson() failed: ");
+//         Serial.println(error.c_str());
+//         // JsonDocument emptyDoc; // gnerate an emptyDoc variable
+//         // return emptyDoc.to<JsonObject>();
+//         return;
+//     }
 
-    // process data
-    // JsonObject CTAAlerts = doc["CTAAlerts"];
-    // const char* CTAAlerts_TimeStamp = CTAAlerts["TimeStamp"]; // "2024-10-20T12:13:49"
-    // Serial.println("Timestamp: " + String(CTAAlerts_TimeStamp));
-    CTAAlerts = rssDoc["CTAAlerts"];
-}
+//     // process data
+//     // JsonObject CTAAlerts = doc["CTAAlerts"];
+//     // const char* CTAAlerts_TimeStamp = CTAAlerts["TimeStamp"]; // "2024-10-20T12:13:49"
+//     // Serial.println("Timestamp: " + String(CTAAlerts_TimeStamp));
+//     CTAAlerts = rssDoc["CTAAlerts"];
+// }
 
 
 void setup() {
@@ -179,17 +170,17 @@ void setup() {
     Serial.println(WiFi.localIP().toString());
 
     // pinMode(LED_PIN, OUTPUT); // Set the LED pin as an output
-    oledSetup();
-    getRssObject();
-    const char* CTAAlerts_TimeStamp = CTAAlerts["TimeStamp"]; // "2024-10-20T12:13:49"
-    Serial.println("Timestamp: " + String(CTAAlerts_TimeStamp));
+    setupOled();
+    updateRssData();
+    // const char* CTAAlerts_TimeStamp = CTAAlerts["TimeStamp"]; // "2024-10-20T12:13:49"
+    // Serial.println("Timestamp: " + String(CTAAlerts_TimeStamp));
     
-    Serial.println("CTAlerts Object: ");
-    if (CTAAlerts.containsKey("Alert")) {
-        Serial.println(CTAAlerts["Alert"][0]["Headline"].as<String>());
-    } else {
-        Serial.println("Alert key not found.");
-    }
+    // Serial.println("CTAlerts Object: ");
+    // if (CTAAlerts.containsKey("Alert")) {
+    //     Serial.println(CTAAlerts["Alert"][0]["Headline"].as<String>());
+    // } else {
+    //     Serial.println("Alert key not found.");
+    // }
 
     // setupLeds();
 }
@@ -346,10 +337,12 @@ void loop() {
         if (currentMillis - previousRssMillis >= rssInterval) {
             previousRssMillis = currentMillis;
             Serial.println("Display Next RSS Feed");
-            for (JsonObject cta_alert : CTAAlerts["Alert"].as<JsonArray>()) {
-                String data = sanitizeString(cta_alert["Headline"].as<String>());
-                displayRssData(data);
-            }
+            // for (JsonObject cta_alert : CTAAlerts["Alert"].as<JsonArray>()) {
+            //     String data = sanitizeString(cta_alert["Headline"].as<String>());
+            //     displayRssData(data);
+            // }
+            displayNextRssFeed();
+
         }
 
         // Update RSS OLED display every 5 seconds and display next item of array

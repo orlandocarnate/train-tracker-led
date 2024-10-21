@@ -14,15 +14,16 @@ size_t arrayLength = 0;
 size_t currentIndex = 0;
 bool isDataNew = false;
 
-JsonArray CTAAlerts_Alert;
+JsonDocument doc;
 JsonObject CTAAlerts;
+JsonArray CTAAlerts_Array;
 
 String sanitizeString(String input) {
     input.replace("’", "'"); // Replace curly apostrophe with standard one
     return input;
 }
 
-void rssSetup() {
+void setupOled() {
     Serial.begin(115200);
     Serial.println(F("OLED Setup Init"));
     display.begin(SSD1306_SWITCHCAPVCC, SSD1306_I2C_ADDRESS);
@@ -63,67 +64,64 @@ String getPayload() {
 }
 
 
-void updateRssArray() {
+void updateRssData() {
     String payload = getPayload();
-
-    // Create JSON document to hold the parsed data
-    JsonDocument doc;
 
     // Deserialize the JSON document
     DeserializationError error = deserializeJson(doc, payload);
 
     if (error) {
-    Serial.print("deserializeJson() failed: ");
-    Serial.println(error.c_str());
-    return;
+        Serial.print("deserializeJson() failed: ");
+        Serial.println(error.c_str());
+        // JsonDocument emptyDoc; // gnerate an emptyDoc variable
+        // return emptyDoc.to<JsonObject>();
+        return;
     }
 
     // process data
     CTAAlerts = doc["CTAAlerts"];
+    CTAAlerts_Array = CTAAlerts["Alert"].as<JsonArray>();
     const char* CTAAlerts_TimeStamp = CTAAlerts["TimeStamp"]; // "2024-10-20T12:13:49"
     Serial.println("Timestamp: " + String(CTAAlerts_TimeStamp));
 
-    for (JsonPair kv : doc.as<JsonObject>()) {
-        Serial.println(kv.key().c_str());  
-    }
+    // update array length
+    arrayLength = CTAAlerts_Array.size();
+    // reset index
+    currentIndex = 0;
+}
 
-    // Array
-    CTAAlerts_Alert = doc["CTAAlerts"]["Alert"].as<JsonArray>();
+void displayRssData(String data) {
+    Serial.println(data);
 
-    Serial.println("CTAAlerts_Alert[0] Keys: ");
-    for (JsonPair kv : CTAAlerts_Alert[0].as<JsonObject>()) {
-        Serial.println(kv.key().c_str());  
-    }
-    
-    JsonObject obj = CTAAlerts_Alert[0].as<JsonObject>();
-    
-    String headline = sanitizeString(obj["Headline"].as<String>());
-
-    Serial.println(headline);
     display.clearDisplay();
     display.setCursor(0, 0);
-    display.print(headline);
+    display.print(data);
     display.display();
-
-
-
-    arrayLength = CTAAlerts_Alert.size();
-    Serial.print("Array Length: ");
-    Serial.println(CTAAlerts_Alert.size());
-    isDataNew = true;
-    Serial.println("Rss Updated");
-    Serial.println("isDataNew TRUE");
-    // loopRssFeed(CTAAlerts_Alert);
 }
 
 void displayNextRssFeed() {
 
-    for (JsonObject cta_alert : CTAAlerts_Alert) {
-        const char* alertId = cta_alert["AlertId"];
-        Serial.println("alertId:");
-        Serial.println(alertId);
+    // for (JsonObject cta_alert : CTAAlerts_Alert) {
+    //     const char* alertId = cta_alert["AlertId"];
+    //     Serial.println("alertId:");
+    //     Serial.println(alertId);
 
+    // }
+    
+    String headline = sanitizeString(CTAAlerts_Array[currentIndex]["Headline"].as<String>());
+    String shortDescription = sanitizeString(CTAAlerts_Array[currentIndex]["ShortDescription"].as<String>());
+    Serial.println(headline);
+    Serial.println(shortDescription);
+
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.println(headline);
+    display.println(shortDescription);
+    display.display();
+
+    currentIndex++;
+
+    if (currentIndex >= arrayLength) {
+        currentIndex = 0;
     }
-
-
 }

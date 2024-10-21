@@ -7,7 +7,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include "TomThumb.h"
+// #include "TomThumb.h"
 
 // #include <Arduino.h>
 // #include <TimeLib.h>
@@ -20,8 +20,13 @@
 
 static const char* rss_blue_line = "https://www.transitchicago.com/api/1.0/alerts.aspx?routeid=blue&outputType=JSON";
 
-void rssSetup();
-void updateRssArray();
+// String sanitizeString(String input);
+// void rssSetup();
+// JsonObject getRssObject();
+// void displayNextRssFeed();
+// void displayRssData(String data);
+void setupOled();
+void updateRssData();
 void displayNextRssFeed();
 
 #endif
