@@ -83,6 +83,8 @@ void updateTrainPositions() {
   // Extract the array
   positionsArray = positionDoc["ctatt"]["route"][0]["train"].as<JsonArray>();
 
+  clearLEDS();
+
   for (JsonObject item : positionsArray) {
 
         const char* nextStaId = item["nextStaId"]; // "40180", ...
