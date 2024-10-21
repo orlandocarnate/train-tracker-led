@@ -3,3 +3,6 @@ https://www.transitchicago.com/rss/railalertsrss.aspx?RouteId=310&outputType=JSO
 
 OLED Display editor
 https://rickkas7.github.io/DisplayGenerator/index.html
+
+
+JsonDocument needs to be global scoped if JsonArray and JsonObject are global scoped also.
