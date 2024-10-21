@@ -2,21 +2,22 @@
 #define POSITIONS_H
 
 // #include <Arduino.h>
-// #include <ArduinoJson.h>
-// #include <HTTPClient.h>
-// #include <WiFiClientSecure.h>
+#include <ArduinoJson.h>
+#include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 // #include <TimeLib.h>
 // #include <JSONVar.h>
 // #include <JSON.h>
 
-// #include "creds.h"
+#include "creds.h"
+#include "leds.h"
 
 struct TrainDirection {
     int id;
     const char* name;
 };
 
-extern const TrainDirection directions[] = {
+const TrainDirection directions[] = {
     {1, "O'Hare-bound"},
     {5, "Forest Park-bound"}
 };
@@ -34,7 +35,7 @@ struct Stop {
 // JsonArray getTrainPositions();
 
 // for mapId Parent Stop
-extern const Station mapidList[] = {
+const Station mapidList[] = {
     {"40390", "Forest Park"},
     {"40980", "Harlem (Forest Park Branch)"},
     {"40180", "Oak Park"},
@@ -72,7 +73,7 @@ extern const Station mapidList[] = {
 
 
 // for individual stops
-extern const Stop stpidList[] = {
+const Stop stpidList[] = {
     {"30076", "E", "Forest Park"},
     {"30189", "E", "Harlem (Forest Park Branch)"},
     {"30034", "E", "Oak Park"},
@@ -141,108 +142,8 @@ extern const Stop stpidList[] = {
     {"30077", "W", "Forest Park"},
 
 };
-// extern const Stop stpidList[] = {
-//     {"30076", "E", "Forest Park"},
-//     {"30077", "W", "Forest Park"},
 
-//     {"30189", "E", "Harlem (Forest Park Branch)"},
-//     {"30190", "W", "Harlem (Forest Park Branch)"},
-
-//     {"30034", "E", "Oak Park"},
-//     {"30035", "W", "Oak Park"},
-
-//     {"30001", "E", "Austin"},
-//     {"30002", "W", "Austin"},
-
-//     {"30187", "E", "Cicero"},
-//     {"30188", "W", "Cicero"},
-
-//     {"30179", "E", "Pulaski"},
-//     {"30180", "W", "Pulaski"},
-
-//     {"30048", "E", "Kedzie-Homan"},
-//     {"30049", "W", "Kedzie-Homan"},
-
-//     {"30042", "E", "Western (Forest Park Branch)"},
-//     {"30043", "W", "Western (Forest Park Branch)"},
-
-//     {"30157", "E", "Illinois Medical District"},
-//     {"30158", "W", "Illinois Medical District"},
-
-//     {"30092", "E", "Racine"},
-//     {"30093", "W", "Racine"},
-
-//     {"30068", "E", "UIC-Halsted"},
-//     {"30069", "W", "UIC-Halsted"},
-
-//     {"30084", "E", "Clinton"},
-//     {"30085", "W", "Clinton"},
-
-//     {"30261", "E", "LaSalle"},
-//     {"30262", "W", "LaSalle"},
-
-//     {"30014", "N", "Jackson"},
-//     {"30015", "S", "Jackson"},
-
-//     {"30153", "N", "Monroe"},
-//     {"30154", "S", "Monroe"},
-
-//     {"30072", "N", "Washington"},
-//     {"30073", "S", "Washington"},
-
-//     {"30375", "N", "Clark/Lake"},
-//     {"30374", "S", "Clark/Lake"},
-
-//     {"30095", "N", "Grand"},
-//     {"30096", "S", "Grand"},
-
-//     {"30271", "N", "Chicago"},
-//     {"30272", "S", "Chicago"},
-
-//     {"30062", "N", "Division"},
-//     {"30063", "S", "Division"},
-
-//     {"30116", "S", "Damen"},
-//     {"30115", "N", "Damen"},
-
-//     {"30129", "N", "Western (O'Hare Branch)"},
-//     {"30130", "S", "Western (O'Hare Branch)"},
-
-//     {"30112", "S", "California"},
-//     {"30111", "N", "California"},
-
-//     {"30197", "N", "Logan Square"},
-//     {"30198", "S", "Logan Square"},
-
-//     {"30012", "N", "Belmont"},
-//     {"30013", "S", "Belmont"},
-
-//     {"30239", "N", "Addison"},
-//     {"30240", "S", "Addison"},
-
-//     {"30107", "N", "Irving Park"},
-//     {"30108", "S", "Irving Park"},
-
-//     {"30259", "N", "Montrose"},
-//     {"30260", "S", "Montrose"},
-
-//     {"30247", "N", "Jefferson Park"},
-//     {"30248", "S", "Jefferson Park"},
-
-//     {"30145", "N", "Harlem (O'Hare Branch)"},
-//     {"30146", "S", "Harlem (O'Hare Branch)"},
-
-//     {"30044", "N", "Cumberland"},
-//     {"30045", "S", "Cumberland"},
-
-//     {"30159", "N", "Rosemont"},
-//     {"30160", "S", "Rosemont"},
-
-//     {"30171", "N", "O'Hare"},
-//     {"30172", "S", "O'Hare"},
-
-// };
-
-// int findIndexOfNextStaId(const char* nextStaId);
+int findIndexOfNextStaId(const char* nextStaId);
+void updateTrainPositions();
 
 #endif

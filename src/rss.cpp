@@ -14,7 +14,7 @@ size_t arrayLength = 0;
 size_t currentIndex = 0;
 bool isDataNew = false;
 
-JsonDocument doc;
+JsonDocument rssDoc;
 JsonObject CTAAlerts;
 JsonArray CTAAlerts_Array;
 
@@ -68,7 +68,7 @@ void updateRssData() {
     String payload = getPayload();
 
     // Deserialize the JSON document
-    DeserializationError error = deserializeJson(doc, payload);
+    DeserializationError error = deserializeJson(rssDoc, payload);
 
     if (error) {
         Serial.print("deserializeJson() failed: ");
@@ -79,7 +79,7 @@ void updateRssData() {
     }
 
     // process data
-    CTAAlerts = doc["CTAAlerts"];
+    CTAAlerts = rssDoc["CTAAlerts"];
     CTAAlerts_Array = CTAAlerts["Alert"].as<JsonArray>();
     const char* CTAAlerts_TimeStamp = CTAAlerts["TimeStamp"]; // "2024-10-20T12:13:49"
     Serial.println("Timestamp: " + String(CTAAlerts_TimeStamp));
