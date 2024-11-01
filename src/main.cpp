@@ -48,9 +48,9 @@ void setup() {
 
     // pinMode(LED_PIN, OUTPUT); // Set the LED pin as an output
     setupLeds();
-    setupOled();
+    setupTftLcd();
     updateRssData();
-
+}
 
 void loop() {
     if (WiFi.status() == WL_CONNECTED) {

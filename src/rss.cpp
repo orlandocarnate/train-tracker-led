@@ -1,14 +1,7 @@
 #include "rss.h"
 
+TFT_eSPI tft = TFT_eSPI(); 
 
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-#define OLED_RESET -1
-#define SSD1306_I2C_ADDRESS 0x3C
-// #define SDA_PIN 21
-// #define SCL_PIN 22
-
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 size_t arrayLength = 0;
 size_t currentIndex = 0;
@@ -23,16 +16,16 @@ String sanitizeString(String input) {
     return input;
 }
 
-void setupOled() {
+void setupTftLcd() {
     Serial.begin(115200);
-    Serial.println(F("OLED Setup Init"));
-    display.begin(SSD1306_SWITCHCAPVCC, SSD1306_I2C_ADDRESS);
-    display.clearDisplay();
-    display.setTextColor(WHITE);
-    display.setTextSize(1);
-    display.setCursor(0, 0);
-    display.print("Hello, World!");
-    display.display();
+    Serial.println(F("Init ST7789V Display"));
+
+    tft.begin();  // initialize
+    tft.setRotation(3);
+
+    // Update Pins in Platformio.ini
+    pinMode(TFT_BL, OUTPUT);
+    digitalWrite(TFT_BL, HIGH);
 }
 
 String getPayload() {
@@ -63,7 +56,6 @@ String getPayload() {
     return payload;
 }
 
-
 void updateRssData() {
     String payload = getPayload();
 
@@ -93,31 +85,65 @@ void updateRssData() {
 void displayRssData(String data) {
     Serial.println(data);
 
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.print(data);
-    display.display();
+    tft.fillScreen(TFT_BLACK);
+    tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    tft.drawString(data, 10, 10, 2);
 }
 
+// Takes text and gets the length and compares it with the width and breaks
+// text down to print on the next line if it exceeds the width
+void displayWrappedText(String text, int x, int y, int width, int fontSize) {
+  tft.setTextFont(fontSize); // Set the built-in font size
+  int cursorX = x;
+  int cursorY = y;
+  int lineHeight = tft.fontHeight(fontSize);
+  String currentLine = "";
+  String word = "";
+  
+  for (int i = 0; i < text.length(); i++) {
+    char c = text.charAt(i);
+
+    if (c == ' ' || c == '\n' || i == text.length() - 1) {
+      if (i == text.length() - 1 && c != ' ' && c != '\n') {
+        word += c;
+      }
+      
+      if (cursorX + tft.textWidth(currentLine + word, fontSize) > width) {
+        // Draw the current line and move to the next
+        tft.drawString(currentLine, cursorX, cursorY);
+        cursorY += lineHeight;
+        cursorX = x;
+        currentLine = word + " ";
+      } else {
+        currentLine += word + " ";
+      }
+      word = "";
+    } else {
+      word += c;
+    }
+  }
+
+  // Draw any remaining text
+  if (currentLine.length() > 0) {
+    tft.drawString(currentLine, cursorX, cursorY);
+  }
+}
+
+
 void displayNextRssFeed() {
-
-    // for (JsonObject cta_alert : CTAAlerts_Alert) {
-    //     const char* alertId = cta_alert["AlertId"];
-    //     Serial.println("alertId:");
-    //     Serial.println(alertId);
-
-    // }
-    
     String headline = sanitizeString(CTAAlerts_Array[currentIndex]["Headline"].as<String>());
     String shortDescription = sanitizeString(CTAAlerts_Array[currentIndex]["ShortDescription"].as<String>());
     Serial.println(headline);
     Serial.println(shortDescription);
 
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.println(headline);
-    display.println(shortDescription);
-    display.display();
+    tft.fillScreen(TFT_BLACK);
+    tft.fillRect(0, 0, 320, 100, TFT_BLUE);
+    tft.setTextColor(TFT_WHITE, TFT_BLUE);
+
+    displayWrappedText(headline, 5, 5, 300, 4);
+
+    tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    displayWrappedText(shortDescription, 5, 110, 300, 2);
 
     currentIndex++;
 
